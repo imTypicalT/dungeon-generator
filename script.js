@@ -1,74 +1,51 @@
+class Square {
+    constructor(x, y, size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+    }
+
+    draw(ctx) {
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(this.x, this.y, this.size, this.size);
+    }
+}
 function generateDungeon() {
-    // Get user inputs
-    const numRooms = parseInt(document.getElementById("numRooms").value);
-    // const roomSize = parseInt(document.getElementById("roomSize").value);
-
-    // Define variables for generation
-    const dungeonLayout = []; // Store dungeon layout data
-    const gridSize = 50; // Number of pixel to create "5ft cube"
-    const maxAttempts = 1000; // Max attempts to create room without overlapping
-    const minRoomSize = gridSize * 3; // Min size
-    const maxRoomSize = gridSize * 5; // Max size
-
-    // Check for room overlap
-    function isOverlapping(room) {
-        return dungeonLayout.some((existingRoom) => {
-            return (
-                room.x < existingRoom.x + existingRoom.width &&
-                room.x + room.width > existingRoom.x &&
-                room.y < existingRoom.y + existingRoom.height &&
-                room.y + room.height > existingRoom.y
-            );
-        });
-    }
-
-    // Generate random room
-    function generateRoom() {
-        const width =
-            Math.floor(Math.random() * (maxRoomSize - minRoomSize + 1)) +
-            minRoomSize;
-        const height =
-            Math.floor(Math.random() * (maxRoomSize - minRoomSize + 1)) +
-            minRoomSize;
-        return {
-            x: Math.floor(Math.random() * (800 - width)), // Replace with canvas width
-            y: Math.floor(Math.random() * (600 - height)), // Replace with canvas height
-            width,
-            height,
-        };
-    }
-
-    // Generate rooms
-    for (let i = 0; i < numRooms; i++) {
-        let attempts = 0;
-        let newRoom;
-        do {
-            newRoom = generateRoom();
-            attempts++;
-        } while (isOverlapping(newRoom) && attempts < maxAttempts);
-
-        if (attempts === maxAttempts) {
-            console.log("Could not place all rooms without overlapping");
-            break;
-        }
-
-        dungeonLayout.push(newRoom);
-    }
-
-    // Draw layout
     const canvas = document.getElementById("dungeonCanvas");
     const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
-    ctx.strokeStyle = "#000"; // Set stroke color
-    ctx.lineWidth = 2; // Set line width
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    dungeonLayout.forEach((room) => {
-        ctx.strokeRect(room.x, room.y, room.width, room.height); // Draw rooms as rectangles
-    });
-    // Draw rooms and corridors
+    // Define grid size
+    const minWidth = 3;
+    const maxWidth = 7;
+    const minHeight = 3;
+    const maxHeight = 7;
 
-    // Update canvas with layout
+    const width =
+        Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
+    const height =
+        Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+
+    const tileSize = 50;
+    const gap = 0; // Gap between squares
+
+    // Calculate total width and height of the grid
+    const totalWidth = width * tileSize + (width - 1); //* gap;
+    const totalHeight = height * tileSize + (height - 1); //* gap;
+
+    // Calculate starting position to center the grid
+    const startX = (canvas.width - totalWidth) / 2;
+    const startY = (canvas.height - totalHeight) / 2;
+
+    // Draw grid
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const x = startX + j * (tileSize + gap);
+            const y = startY + i * (tileSize + gap);
+            const square = new Square(x, y, tileSize);
+            square.draw(ctx);
+        }
+    }
 }
-
-function saveImage() {}
