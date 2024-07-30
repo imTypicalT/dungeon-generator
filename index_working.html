@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Random Dungeon Generator</title>
+        <link rel="stylesheet" type="text/css" href="styles.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Random Dungeon Generator</h1>
+            <label for="numRooms">Number of Rooms:</label>
+            <input type="number" id="numRooms" min="1" />
+            <!-- <label for="roomSize">Room Size:</label>
+            <input type="number" id="roomSize" min="1" /> -->
+            <button onclick="generateDungeon()">Generate Dungeon</button>
+            <canvas id="dungeonCanvas" width="800" height="800"></canvas>
+            <button onclick="saveImage()">Save Image</button>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
