@@ -11,13 +11,20 @@
             <h1>Random Dungeon Generator</h1>
             <label for="numRooms">Number of Rooms:</label>
             <input type="number" id="numRooms" min="1" />
+            <label for="gridSize">Grid Size: </label>
+            <select name="gridSize" id="gridSize" onchange="resetCanvas()">
+                <option value="15">Small</option>
+                <option value="30" selected>Medium</option>
+                <option value="50">Large</option>
+            </select>
             <!-- <label for="roomSize">Room Size:</label>
             <input type="number" id="roomSize" min="1" /> -->
             <button onclick="generateDungeon()">Generate Dungeon</button>
+            <button onclick="resetCanvas()">Reset</button>
             <canvas id="dungeonCanvas" width="800" height="800"></canvas>
             <button onclick="saveImage()">Save Image</button>
         </div>
-
+        <!-- CHANGE TO 'script.js' BEFORE FINAL -->
         <script src="script.js"></script>
     </body>
 </html>

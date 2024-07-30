@@ -10,14 +10,87 @@ class Square {
         ctx.strokeRect(this.x, this.y, this.size, this.size);
     }
 }
-function generateDungeon() {
+
+let tileSize = Number(document.getElementById("gridSize").value); // Get pixel size from HTML selection
+let coordinates = []; // Keep track of room coordinates
+
+drawGrid = (ctx, width, height, tileSize) => {
+    ctx.strokeStyle = "#e0e0e0";
+    for (let x = 0; x <= width; x += tileSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+    }
+    for (let y = 0; y <= height; y += tileSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+    }
+};
+
+// Check if room overlaps existing rooms
+checkOverlap = (x, y, width, height) => {
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const checkX = x + j;
+            const checkY = y + i;
+            if (coordinates[checkY] && coordinates[checkY][checkX]) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+// Add room position to coordinates array
+markCoordinates = (x, y, width, height) => {
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const markX = x + j;
+            const markY = y + i;
+            if (!coordinates[markY]) coordinates[markY] = [];
+            coordinates[markY][markX] = true;
+        }
+    }
+};
+
+// Find potential positions for a new room
+findPotentialPositions = (width, height) => {
+    let positions = [];
+    const minDistance = 2; // Minimum distance (1 square) + 1 for the next square
+    const maxDistance = 6; // Maximum distance (5 squares) + 1 for the next square
+
+    for (let y = 0; y < coordinates.length; y++) {
+        if (!coordinates[y]) continue;
+
+        // Check in all 4 directions
+        for (let dy = -maxDistance; dy <= maxDistance; dy++) {
+            for (let dx = -maxDistance; dx <= maxDistance; dx++) {
+                if (Math.abs(dx) < minDistance && Math.abs(dy) < minDistance) {
+                    continue; // This insures a min distance
+                }
+                let newX = x + dx;
+                let newY = y + dy;
+                if (
+                    newX >= 0 &&
+                    newY >= 0 &&
+                    !checkOverlap(newX, newY, width, height)
+                ) {
+                    positions.push({ x: newX, y: newY });
+                }
+            }
+        }
+    }
+    return positions;
+};
+
+// Generate room
+generateRoom = (ctx) => {
     const canvas = document.getElementById("dungeonCanvas");
-    const ctx = canvas.getContext("2d");
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Define grid size
+    // Define max/min room size
     const minWidth = 3;
     const maxWidth = 7;
     const minHeight = 3;
@@ -28,24 +101,65 @@ function generateDungeon() {
     const height =
         Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
 
-    const tileSize = 50;
     const gap = 0; // Gap between squares
 
-    // Calculate total width and height of the grid
-    const totalWidth = width * tileSize + (width - 1); //* gap;
-    const totalHeight = height * tileSize + (height - 1); //* gap;
+    // Calculate random position
+    const maxAttempts = 100;
+    let attempt = 0;
+    let startX, startY;
 
-    // Calculate starting position to center the grid
-    const startX = (canvas.width - totalWidth) / 2;
-    const startY = (canvas.height - totalHeight) / 2;
+    do {
+        startX =
+            Math.floor(Math.random() * (canvas.width / tileSize - width)) *
+            tileSize;
+        startY =
+            Math.floor(Math.random() * (canvas.height / tileSize - height)) *
+            tileSize;
+        attempt++;
+    } while (
+        checkOverlap(startX / tileSize, startY / tileSize, width, height) &&
+        attempt < maxAttempts
+    );
 
-    // Draw grid
-    for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-            const x = startX + j * (tileSize + gap);
-            const y = startY + i * (tileSize + gap);
-            const square = new Square(x, y, tileSize);
-            square.draw(ctx);
+    if (attempt < maxAttempts) {
+        // Mark grid with room's position
+        markCoordinates(startX / tileSize, startY / tileSize, width, height);
+
+        // Draw room
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                const x = startX + j * (tileSize + gap);
+                const y = startY + i * (tileSize + gap);
+                const square = new Square(x, y, tileSize);
+                square.draw(ctx);
+            }
         }
+    } else {
+        console.log("Failed to place room after maximum attempts");
     }
-}
+};
+// Generate hallways between rooms
+generateHallway = () => {};
+
+// Generate the full dungeon layout
+generateDungeon = () => {
+    const canvas = document.getElementById("dungeonCanvas");
+    const ctx = canvas.getContext("2d");
+    resetCanvas();
+    let numberOfRooms = 3; // Example number of rooms
+    for (let i = 0; i < numberOfRooms; i++) {
+        generateRoom(ctx);
+    }
+};
+// Reset canvas
+resetCanvas = () => {
+    const canvas = document.getElementById("dungeonCanvas");
+    const ctx = canvas.getContext("2d");
+    tileSize = Number(document.getElementById("gridSize").value);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid(ctx, canvas.width, canvas.height, tileSize);
+    coordinates = []; // Clear coordinates data
+};
+
+// Initial grid draw
+resetCanvas();
