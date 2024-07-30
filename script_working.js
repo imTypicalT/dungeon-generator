@@ -11,11 +11,11 @@ class Square {
     }
 }
 
-let tileSize = Number(document.getElementById("gridSize").value); // Variable tilesize
+let tileSize = Number(document.getElementById("gridSize").value); // Get pixel size from HTML selection
 let coordinates = []; // Keep track of room coordinates
 
 drawGrid = (ctx, width, height, tileSize) => {
-    ctx.strokeStyle = "#a0a0a0";
+    ctx.strokeStyle = "#e0e0e0";
     for (let x = 0; x <= width; x += tileSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -45,7 +45,7 @@ checkOverlap = (x, y, width, height) => {
 };
 
 // Add room position to coordinates array
-markGrid = (x, y, width, height) => {
+markCoordinates = (x, y, width, height) => {
     for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
             const markX = x + j;
@@ -56,16 +56,9 @@ markGrid = (x, y, width, height) => {
     }
 };
 
-// Generate room size
+// Generate room
 generateRoom = (ctx) => {
     const canvas = document.getElementById("dungeonCanvas");
-    // const ctx = canvas.getContext("2d");
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw grid
-    drawGrid(ctx, canvas.width, canvas.height, tileSize);
 
     // Define max/min room size
     const minWidth = 3;
@@ -100,7 +93,7 @@ generateRoom = (ctx) => {
 
     if (attempt < maxAttempts) {
         // Mark grid with room's position
-        markGrid(startX / tileSize, startY / tileSize, width, height);
+        markCoordinates(startX / tileSize, startY / tileSize, width, height);
 
         // Draw room
         for (let i = 0; i < height; i++) {
