@@ -30,7 +30,7 @@ drawGrid = (ctx, width, height, tileSize) => {
     }
 };
 
-// Check if room overlaps
+// Check if room overlaps existing rooms
 checkOverlap = (x, y, width, height) => {
     for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
@@ -54,6 +54,36 @@ markCoordinates = (x, y, width, height) => {
             coordinates[markY][markX] = true;
         }
     }
+};
+
+// Find potential positions for a new room
+findPotentialPositions = (width, height) => {
+    let positions = [];
+    const minDistance = 2; // Minimum distance (1 square) + 1 for the next square
+    const maxDistance = 6; // Maximum distance (5 squares) + 1 for the next square
+
+    for (let y = 0; y < coordinates.length; y++) {
+        if (!coordinates[y]) continue;
+
+        // Check in all 4 directions
+        for (let dy = -maxDistance; dy <= maxDistance; dy++) {
+            for (let dx = -maxDistance; dx <= maxDistance; dx++) {
+                if (Math.abs(dx) < minDistance && Math.abs(dy) < minDistance) {
+                    continue; // This insures a min distance
+                }
+                let newX = x + dx;
+                let newY = y + dy;
+                if (
+                    newX >= 0 &&
+                    newY >= 0 &&
+                    !checkOverlap(newX, newY, width, height)
+                ) {
+                    positions.push({ x: newX, y: newY });
+                }
+            }
+        }
+    }
+    return positions;
 };
 
 // Generate room
