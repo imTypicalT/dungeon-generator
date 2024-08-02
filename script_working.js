@@ -159,11 +159,6 @@ generateRoom = (ctx) => {
             square.draw(ctx);
         }
     }
-    // DEBUG
-    if (debug) {
-        console.log("Last Room Position: ");
-        console.log(lastRoom);
-    }
 };
 // Generate hallways between rooms
 generateHallway = () => {};
@@ -174,8 +169,19 @@ generateDungeon = () => {
     const ctx = canvas.getContext("2d");
     resetCanvas();
     let numberOfRooms = Number(document.getElementById("numRooms").value) || 3; // Example number of rooms
+    if (debug) {
+        console.log("-----{DEBUG ROOM COORDINATES}-----");
+    }
     for (let i = 0; i < numberOfRooms; i++) {
         generateRoom(ctx);
+        // DEBUG
+        if (debug) {
+            console.log(
+                `Room ${i + 1} Positions: { x: ${lastRoom.x}, y: ${
+                    lastRoom.y
+                } }`
+            );
+        }
     }
 };
 // Reset canvas
